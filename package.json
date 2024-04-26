@@ -1,0 +1,30 @@
+{
+  "name": "dev013-fleet-management-api",
+  "version": "1.0.0",
+  "description": "* [1. Preámbulo](#1-preámbulo)\r * [2. Resumen del proyecto](#2-resumen-del-proyecto)\r * [3. Objetivos de aprendizaje](#3-objetivos-de-aprendizaje)\r * [4. Consideraciones generales](#4-consideraciones-generales)\r * [5. Criterios de aceptación del proyecto](#5-criterios-de-aceptación-del-proyecto)\r * [6. Stack de tecnologías](#6-stack-de-tecnologías)\r * [7. Pistas, tips y lecturas complementarias](#7-pistas-tips-y-lecturas-complementarias)\r * [8. Funcionalidades opcionales](#8-funcionalidades-opcionales)",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "dev": "ts-node-dev src/index.ts",
+    "tsc": "tsc",
+    "start": "node build/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.12.7",
+    "jest": "^29.7.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.13.0",
+    "express": "4.19.2",
+    "prisma": "^5.13.0"
+  }
+}
