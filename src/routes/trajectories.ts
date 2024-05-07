@@ -2,7 +2,7 @@ import express from 'express'
 import { lastLocation, locationLog } from '../controller/trajectories'
 
 
-const tjsRouter = express.Router()
+const router = express.Router()
 
 
 /**
@@ -118,7 +118,7 @@ const tjsRouter = express.Router()
  *              $ref: '#/components/schemas/Error'                  
 */
 
-tjsRouter.get('/trajectories:id', locationLog ) // seria la funcion del controller
-tjsRouter.get('/trajectories/search:id', lastLocation ) // ultima ubicación
+router.get('/trajectories:id', locationLog) // seria la funcion del controller
+router.get('/trajectories/search:id', lastLocation) // ultima ubicación
 
-export default tjsRouter
+export default router
