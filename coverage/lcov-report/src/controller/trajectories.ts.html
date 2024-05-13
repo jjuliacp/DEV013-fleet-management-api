@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/controller/taxis.ts</title>
+    <title>Code coverage report for src/controller/trajectories.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/controller</a> taxis.ts</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/controller</a> trajectories.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">87.5% </span>
+                <span class="strong">85% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>14/16</span>
+                <span class='fraction'>17/20</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>10/10</span>
+                <span class='fraction'>7/7</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/2</span>
+                <span class='fraction'>2/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">85.71% </span>
+                <span class="strong">87.5% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>12/14</span>
+                <span class='fraction'>14/16</span>
             </div>
         
             
@@ -103,78 +103,78 @@
 <a name='L38'></a><a href='#L38'>38</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Handler } from "express"  // interfaz handler para describir funciones manejadoras de app express
-import { getTaxis } from "../services/taxiService";
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Handler } from "express"
+import { getTaxiLocations } from "../services/trajectorieService"
 &nbsp;
-&nbsp;
-//sin interactuar directamente con la base de datos.
-&nbsp;
-//getAllTaxis
-export const getAllTaxis: Handler = async (req, res) =&gt; {
+export const locationLog: Handler = async (req, res) =&gt; {
+  //  aqui obtienes las ubicaciones 
+  //El endpoint responde con el id del taxi y una fecha
+  const { id } = req.params
+  const { date } = req.query
+  if (!id || !date) {
+    return res.status(400).json({ message: 'los parametros taxiId y date son obligatorios en la consulta' })
+  }
+  const page = parseInt(req.query.page as string) || 1; // Página por defecto 1
+  const limit = parseInt(req.query.limit as string) || 10; // Límite por defecto 10
+  const searchdate = new Date(date as string) // Convertir la fecha a formato de objeto Date
+  const startIndex = (page - 1) * limit;
+  //obtener los taxis
   try {
-    // Obtener los parámetros de consulta para paginación y límite
-    const page = parseInt(req.query.page as string) || 1; // Página por defecto 1
-    const limit = parseInt(req.query.limit as string) || 10; // Límite por defecto 10
+    // Obtener las ubicaciones del taxi para la fecha especificada
+    const taxiLocation = await getTaxiLocations(id, searchdate, startIndex, limit)
+    // Paginar los resultados si es necesario
 &nbsp;
-    // Calcular el índice de inicio
-    if (page &lt; 1 || limit &lt; 10) {
-      res.status(400).json({ message: "Bad Request- solicitud invalida" });
-    } else {
-      const startIndex = (page - 1) * limit;
-      //obtener los taxis
-      const taxis = await getTaxis(startIndex, limit);
+    // Esto depende de cuántas ubicaciones de taxi se esperen para una fecha determinada
 &nbsp;
-      if (taxis.length === 0) {
-        res.status(404).json({ message: "No se encontraron usuarios" });
-      } else {
-        //enviar respuesta con los taxis
-        res.status(200).json(taxis);
-      }
-    }
+    // Enviar respuesta con las ubicaciones del taxi
+    return res.status(200).json(taxiLocation);
+&nbsp;
   } catch (error) {
-    //manejar errores
-<span class="cstat-no" title="statement not covered" >    console.error('error al obtener los taxis', error)</span>
-<span class="cstat-no" title="statement not covered" >    res.status(500).json({ error: 'error al obtener los taxis' })</span>
+   // console.error('Error al obtener las ubicaciones del taxi', error);
+<span class="cstat-no" title="statement not covered" >    return res.status(500).json({ message: 'Error interno del servidor' });</span>
   }
 }
 &nbsp;
- 
+export const lastLocation: Handler = <span class="fstat-no" title="function not covered" >async (_</span>req, res) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
+  //  await prisma.$connect()
 &nbsp;
-&nbsp;</pre></td></tr></table></pre>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  res.send('aqui obtienes ultima ubicacion')</span>
+}</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
