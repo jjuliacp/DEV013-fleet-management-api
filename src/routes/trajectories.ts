@@ -118,7 +118,7 @@ const router = express.Router()
  *              $ref: '#/components/schemas/Error'                  
 */
 
-router.get('/trajectories:id', locationLog) // seria la funcion del controller
-router.get('/trajectories/search:id', lastLocation) // ultima ubicación
+router.get('/trajectories/:id', locationLog) // seria la funcion del controller
+router.get('/trajectories/search/:id', lastLocation) // ultima ubicación
 
 export default router

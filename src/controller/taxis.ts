@@ -33,5 +33,5 @@ export const getAllTaxis: Handler = async (req, res) => {
   }
 }
 
-//agregar paginación y limit
+ 
 
