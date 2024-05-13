@@ -31,8 +31,12 @@ export const locationLog: Handler = async (req, res) => {
 }
 
 export const lastLocation: Handler = async (_req, res) => {
-  //  await prisma.$connect()
-
-
-  res.send('aqui obtienes ultima ubicacion')
+  // Endpoint para consultar la última ubicación reportada por cada taxi
+ try{
+    // Implementar la lógica para obtener la última ubicación de cada taxi
+   res.send('aqui obtienes ultima ubicacion')
+ } catch(error){
+  //console.error('Error al obtener la última ubicación de los taxis:', error);
+  res.status(500).json({ error: 'Error al obtener la última ubicación de los taxis' });
+ }
 }

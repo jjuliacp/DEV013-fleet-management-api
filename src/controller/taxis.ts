@@ -32,6 +32,3 @@ export const getAllTaxis: Handler = async (req, res) => {
     res.status(500).json({ error: 'error al obtener los taxis' })
   }
 }
-
- 
-
