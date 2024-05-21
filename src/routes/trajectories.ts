@@ -89,7 +89,7 @@ const router = express.Router()
 
 /**
  *  @swagger
- * /trajectories/search/{id} :
+ * /lastlocation:
  *  get:
  *   tags:
  *     - Trajectories
@@ -119,6 +119,6 @@ const router = express.Router()
 */
 
 router.get('/trajectories/:id', locationLog) // seria la funcion del controller
-router.get('/trajectories/search/:id', lastLocation) // ultima ubicación
+router.get('/lastlocation', lastLocation); // ultima ubicación
 
 export default router

@@ -26,3 +26,25 @@ export const getTaxiLocations = async (id: string, searchDate: Date, startIndex:
         return error
     }
 }
+
+export const getLastLocations = async (skip: number, take: number) =>{
+  try{
+    return await prisma.trajectories.findMany({
+      // ordena todos los registros de trayectorias en base a la fecha, del más reciente al más antiguo.
+      orderBy: {
+        date: 'desc',
+      },
+      select:{
+        latitude:true,
+        longitude: true,
+        taxi_id: true,
+        date: true,
+      },
+      distinct: ["taxi_id"], //solo se devuelva un resultado único para cada taxi_id, eliminando duplicados
+      skip,
+      take,
+    })
+  }catch (error){
+    return error
+  }
+}
