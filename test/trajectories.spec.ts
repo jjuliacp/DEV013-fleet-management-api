@@ -18,3 +18,19 @@ describe('GET /taxis', () => {
         expect(response.body).toEqual({ message: 'los parametros taxiId y date son obligatorios en la consulta' });
     });
 });
+
+
+describe('GET /lastlocation', () => {
+    it('should return last trajectories for taxis', async () => {
+        const response = await request(app).get(`/lastlocation`);
+        expect(response.status).toBe(200);
+        expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
+        expect(Array.isArray(response.body)).toBeTruthy();
+    });
+    it('should return taxis in JSON format', async () => {
+        const response = await request(app).get('/lastlocation');
+        expect(response.status).toBe(200);
+        expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
+      });
+ 
+});

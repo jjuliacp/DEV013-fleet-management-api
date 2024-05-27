@@ -95,12 +95,20 @@ const router = express.Router()
  *     - Trajectories
  *   summary:  Obtiene todas las ubicaciones de un taxi 
  *   parameters: 
- *      - name: id 
- *        in: path
- *        description: se necesita id para consultar la última ubicación reportada por cada taxi.
- *        required: true
+ *      - name: _page
+ *        in: query
+ *        description: Número de página para consultar.
+ *        required: false
  *        schema:
  *          type: integer
+ *          default: 1
+ *      - name: _limit
+ *        in: query
+ *        description: número de elementos por pagina.
+ *        required: false
+ *        schema:
+ *          type: integer
+ *          default: 10
  *   responses:
  *      200:
  *       description: operación exitosa
