@@ -12,7 +12,7 @@ export const getAllTaxis: Handler = async (req, res) => {
     const limit = parseInt(req.query.limit as string) || 10; // Límite por defecto 10
 
     // Calcular el índice de inicio
-    if (page < 1 || limit < 10) {
+    if (page < 0 || limit < 10) {
       res.status(400).json({ message: "Bad Request- solicitud invalida" });
     } else {
       const startIndex = (page - 1) * limit;
@@ -32,6 +32,3 @@ export const getAllTaxis: Handler = async (req, res) => {
     res.status(500).json({ error: 'error al obtener los taxis' })
   }
 }
-
- 
-

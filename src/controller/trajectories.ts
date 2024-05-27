@@ -1,5 +1,5 @@
 import { Handler } from "express"
-import { getTaxiLocations } from "../services/trajectorieService"
+import { getLastLocations, getTaxiLocations } from "../services/trajectorieService"
 
 export const locationLog: Handler = async (req, res) => {
   //  aqui obtienes las ubicaciones 
@@ -30,9 +30,20 @@ export const locationLog: Handler = async (req, res) => {
   }
 }
 
-export const lastLocation: Handler = async (_req, res) => {
-  //  await prisma.$connect()
-
-
-  res.send('aqui obtienes ultima ubicacion')
+export const lastLocation: Handler = async (req, res) => {
+  // Endpoint para consultar la última ubicación reportada por cada taxi
+  const page = parseInt(req.query.page as string) || 1; // Página por defecto 1
+  const limit = parseInt(req.query.limit as string) || 10; // Límite por defecto 10
+  const startIndex = (page - 1) * limit;
+  // if (isNaN(page) || isNaN(limit) || page <1 || limit < 10) {
+  //   return res.status(400).json({ message: 'Los parámetros page y limit deben ser números enteros mayores'})
+  // }
+ try{
+  // Implementar la lógica para obtener la última ubicación de cada taxi
+  const lastLocations = await getLastLocations(startIndex, limit)
+  return res.status(200).json(lastLocations)
+ } catch(error){
+  //console.error('Error al obtener la última ubicación de los taxis:', error);
+  return res.status(500).json({ error: 'Error al obtener la última ubicación de los taxis' });
+ }
 }

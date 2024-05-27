@@ -89,18 +89,26 @@ const router = express.Router()
 
 /**
  *  @swagger
- * /trajectories/search/{id} :
+ * /lastlocation:
  *  get:
  *   tags:
  *     - Trajectories
  *   summary:  Obtiene todas las ubicaciones de un taxi 
  *   parameters: 
- *      - name: id 
- *        in: path
- *        description: se necesita id para consultar la última ubicación reportada por cada taxi.
- *        required: true
+ *      - name: _page
+ *        in: query
+ *        description: Número de página para consultar.
+ *        required: false
  *        schema:
  *          type: integer
+ *          default: 1
+ *      - name: _limit
+ *        in: query
+ *        description: número de elementos por pagina.
+ *        required: false
+ *        schema:
+ *          type: integer
+ *          default: 10
  *   responses:
  *      200:
  *       description: operación exitosa
@@ -119,6 +127,6 @@ const router = express.Router()
 */
 
 router.get('/trajectories/:id', locationLog) // seria la funcion del controller
-router.get('/trajectories/search/:id', lastLocation) // ultima ubicación
+router.get('/lastlocation', lastLocation); // ultima ubicación
 
 export default router
