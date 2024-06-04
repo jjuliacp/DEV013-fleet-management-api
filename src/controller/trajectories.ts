@@ -12,8 +12,13 @@ export const locationLog: Handler = async (req, res) => {
   if (!id || !date) {
     return res.status(400).json({ message: 'los parametros taxiId y date son obligatorios en la consulta' })
   }
-  const page = parseInt(req.query.page as string) || 1; // Página por defecto 1
-  const limit = parseInt(req.query.limit as string) || 10; // Límite por defecto 10
+  let page = parseInt(req.query.page as string)// Página por defecto 1
+  let limit = parseInt(req.query.limit as string) // Límite por defecto 10
+  if (isNaN(page) || isNaN(limit)) {
+    page = 1; limit = 10
+  } else if (page < 1 || limit < 1) {
+    return res.status(400).json({ message: 'Los parámetros page y limit deben ser números enteros mayores' })
+  }
   const searchdate = new Date(date as string) // Convertir la fecha a formato de objeto Date
   const startIndex = (page - 1) * limit;
   //obtener los taxis
@@ -35,12 +40,17 @@ export const locationLog: Handler = async (req, res) => {
 
 export const lastLocation: Handler = async (req, res) => {
   // Endpoint para consultar la última ubicación reportada por cada taxi
-  const page = parseInt(req.query.page as string) || 1; // Página por defecto 1
-  const limit = parseInt(req.query.limit as string) || 10; // Límite por defecto 10
-  const startIndex = (page - 1) * limit;
-  if (isNaN(page) || isNaN(limit) || page < 1 || limit < 10) {
+  //validar si no existe dar un valor y si existe asegurar que sean numeros y sean positivos
+  let page = parseInt(req.query.page as string)// Página por defecto 1
+  let limit = parseInt(req.query.limit as string) // Límite por defecto 10
+  if (isNaN(page) || isNaN(limit)) {
+    page = 1; limit = 10
+  } else if (page < 1 || limit < 1) {
     return res.status(400).json({ message: 'Los parámetros page y limit deben ser números enteros mayores' })
   }
+  const startIndex = (page - 1) * limit;
+
+
   try {
     // Implementar la lógica para obtener la última ubicación de cada taxi
     const lastLocations = await getLastLocations(startIndex, limit)
@@ -83,8 +93,8 @@ export const exportToExcel: Handler = async (req, res) => {
     const mailOptions = {
       from: process.env.EMAIL, // Remitente
       to: email as string, // Destinatario
-      subject: 'Exportación de trayectorias intento 6',
-      text: '¡Hola! Este es un correo electrónico de prueba 6', // Contenido del correo (texto plano)
+      subject: 'Exportación de trayectorias intento 133984993725',
+      text: '¡Hola! Este es un correo electrónico de prueba 133998493725', // Contenido del correo (texto plano)
       attachments: [ //adjuntar 
         {
           filename: `trajectories_${id}_${date}.xlsx`, // aqui le damos el nombre al archivo excel
@@ -92,15 +102,15 @@ export const exportToExcel: Handler = async (req, res) => {
         },
       ],
     };
-    
+
     // Enviar el correo
     await transporter.sendMail(mailOptions);
     //console.log('Correo electrónico enviado');
-    
+
     // // Eliminar el archivo temporal
     // fs.unlinkSync(filePath);
     return res.status(200).json({ message: 'El archivo Excel ha sido enviado por correo electrónico' });
-    
+
   } catch (error) {
     console.error('Error al obtener las ubicaciones del taxi', error);
     return res.status(500).json({ message: 'Error interno del servidor' });
