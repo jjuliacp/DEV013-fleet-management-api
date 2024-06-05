@@ -34,3 +34,7 @@ describe('GET /lastlocation', () => {
       });
  
 });
+
+describe('GET /trajectories/:id/export', () =>{
+    it('')
+})
