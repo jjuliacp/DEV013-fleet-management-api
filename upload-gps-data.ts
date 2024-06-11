@@ -1,6 +1,6 @@
 // node upload-gps-data.js <path-to-files>
 // --type=taxis|trajectories
-// --dbname=<dbname>
+// --dbname=<dbname>  
 // --host=<hostname>
 // --port=<port>
 // --username=<username>
@@ -26,11 +26,12 @@
 
 // 
 // import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import fs from 'fs';
 import inquirer from 'inquirer';
 import path from 'path';
 
-// const prisma = new PrismaClient(); //    // 5. Conectar a la base de datos usando Prisma
+const prisma = new PrismaClient(); //    // 5. Conectar a la base de datos usando Prisma
 
 async function main() {
     process.argv.forEach((val, index) => {
@@ -91,44 +92,120 @@ async function main() {
     // 3. Construir la URL de conexión a la base de datos y configurarla en DATABASE_URL
     const dbUrl = `postgresql://${username}@${host}:${port}/${dbname}`;
     process.env.DATABASE_URL = dbUrl;
-    console.log(dbUrl);
+    console.log(process.env.DATABASE_URL);
 
-   // 2. Leer el archivo de taxis o los archivos de trayectorias según el tipo
-// 6. Insertar los datos leídos en las tablas correspondientes
-
-    if (type === 'taxis') {
-        // Leer el archivo de taxis
-        const taxisFilePath = path.join(directoryPath, 'taxis.txt'); // concatenar la ruta del directorio con el nombre de archivo txt
-        try {
-            const taxisData = fs.readFileSync(taxisFilePath, 'utf8'); //leer file/archivo
-            // Aquí falta procesar los datos de los taxis
-            console.log('Taxis data:', taxisData);
-        } catch (error) {
-            console.error('Error reading taxis file:', error);
+    try {
+        await prisma.$connect(); // 4. conectar con db
+        // 5. Leer el archivo de taxis o los archivos de trayectorias según el tipo
+        const taxisFilePath = path.join(directoryPath, 'taxis.txt');  // concatenar la ruta del directorio con el nombre de archivo txt
+        if (type === 'taxis') {
+            if (!fs.existsSync(taxisFilePath)) {
+                console.error(`Taxis file does not exist: ${taxisFilePath}`);
+                process.exit(1);
+            }
         }
-    } else if (type === 'trajectories') {
-        // Leer los archivos de trayectorias en la carpeta "trajectories"
+        const readStream = fs.createReadStream(taxisFilePath, { encoding: 'utf8' }); //leer file/archivo
+        let buffer = '';
+        readStream.on('data', async (chunk) => { // 1. Escuchar el evento 'data'
+            buffer += chunk;
+            let lines = buffer.split('\n');
+            buffer = lines.pop() || '';  // Mantén la última línea parcial en el buffer
+
+            for (const line of lines) {
+                const [id, plate] = line.split(',');
+                if (id && plate) {
+                    try {
+                        // Verificar si el taxi ya existe en la base de datos
+                        const existingTaxi = await prisma.taxis.findUnique({
+                            where: { id: parseInt(id) },
+                        });
+
+                        if (existingTaxi) {
+                            console.log(`Taxi ID ${id} already exists in the database.`);
+                        } else {
+                            await prisma.taxis.create({
+                                data: {
+                                    id: parseInt(id),
+                                    plate
+                                }
+                            });
+                            console.log(`Inserted Taxi ID ${id} into the database.`);
+                        }
+                    } catch (error) {
+                        console.error(`Error processing data for taxi ID ${id}:`, error);
+                    }
+                }
+            }
+        });
+
+    } catch (error) {
+        console.error('Error reading taxis file:', error);
+    } finally {
+        await prisma.$disconnect();
+    }
+
+    //2. escuchar el event 'end'
+    
+    try {
+        await prisma.$connect(); 
         const trajectoriesDirPath = path.join(directoryPath, 'trajectories');
-        try {
-            const files = fs.readdirSync(trajectoriesDirPath);
-            files.forEach(fileData =>{
-                const filePath =path.join(trajectoriesDirPath, fileData);
-                const trajectoriesData  = fs.readFileSync(filePath, 'utf-8'); 
-                console.log(`Trajectories data from ${fileData}:`, trajectoriesData);
-            })
-            console.log('Trajectories data:', files);
-            
-        } catch (error) {
-            console.error('Error reading trajectories directory:', error);
+        if (type === 'trajectories') {
+            if (!fs.existsSync(trajectoriesDirPath)) {
+                console.error(`Taxis file does not exist: ${trajectoriesDirPath}`);
+                process.exit(1);
+            }
         }
-    }   
-  
+        const files = fs.readdirSync(trajectoriesDirPath);
+
+        files.forEach(async (fileData) => {
+            const filePath = path.join(trajectoriesDirPath, fileData);
+            const readStream = fs.createReadStream(filePath, { encoding: 'utf8' });
+            let buffer = '';
+
+            readStream.on('data', async (chunk) => {
+                buffer += chunk;
+                let lines = buffer.split('\n');
+                buffer = lines.pop() || '';
+
+                for (const line of lines) {
+                    const [taxi_id, date, latitude, longitude, id] = line.split(',');
+                    if (taxi_id && date && latitude && longitude && id) {
+                        try {
+                            // Aquí puedes insertar los datos en la base de datos
+                            await prisma.trajectories.create({
+                                data: {
+                                    taxi_id: parseInt(taxi_id),
+                                    date: new Date(date),
+                                    latitude: parseFloat(latitude),
+                                    longitude: parseFloat(longitude),
+                                    id: parseInt(id)
+                                }
+                            });
+                        } catch (error) {
+                            console.error(`Error processing data for trajectory ID ${id}:`, error);
+                        }
+                    }
+                }
+            });
+
+            readStream.on('end', () => {
+                console.log(`Trajectories data from ${fileData} processed.`);
+            });
+
+            readStream.on('error', (error) => {
+                console.error('Error reading trajectory file:', error);
+            });
+        });
+    } catch (error) {
+        console.error('Error reading trajectories directory:', error);
+    }
 }
-main()
- ;
+    main()
+        ;
 
 
 
+// 6. Insertar los datos leídos en las tablas correspondientes
 
 
 
