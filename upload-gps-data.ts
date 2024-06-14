@@ -1,9 +1,9 @@
 // node upload-gps-data.js <path-to-files>
 // --type=taxis|trajectories
 // --dbname=<dbname>  
-// --host=<hostname>
-// --port=<port>
-// --username=<username>
+// --host=<hostname> 
+// --port=<port> 
+// --username=<username> 
 
 // import inquirer from 'inquirer';
 
@@ -86,13 +86,13 @@ async function main() {
         password = password || answers.password;
     }
 
-    console.log(`Type: ${type}, DB Name: ${dbname}, Host: ${host}, Port: ${port}, Username: ${username}, Password: ${password}`);
+    // console.log(`Type: ${type}, DB Name: ${dbname}, Host: ${host}, Port: ${port}, Username: ${username}, Password: ${password}`);
 
 
     // 3. Construir la URL de conexión a la base de datos y configurarla en DATABASE_URL
     const dbUrl = `postgresql://${username}@${host}:${port}/${dbname}`;
     process.env.DATABASE_URL = dbUrl;
-    console.log(process.env.DATABASE_URL);
+    // console.log(process.env.DATABASE_URL);
 
     try {
         await prisma.$connect(); // 4. conectar con db
@@ -103,105 +103,111 @@ async function main() {
                 console.error(`Taxis file does not exist: ${taxisFilePath}`);
                 process.exit(1);
             }
-        }
-        const readStream = fs.createReadStream(taxisFilePath, { encoding: 'utf8' }); //leer file/archivo
-        let buffer = '';
-        readStream.on('data', async (chunk) => { // 1. Escuchar el evento 'data'
-            buffer += chunk;
-            let lines = buffer.split('\n');
-            buffer = lines.pop() || '';  // Mantén la última línea parcial en el buffer
 
-            for (const line of lines) {
-                const [id, plate] = line.split(',');
-                if (id && plate) {
-                    try {
-                        // Verificar si el taxi ya existe en la base de datos
-                        const existingTaxi = await prisma.taxis.findUnique({
-                            where: { id: parseInt(id) },
-                        });
+            const readStream = fs.createReadStream(taxisFilePath, { encoding: 'utf8' }); //leer file/archivo
+            let buffer = '';
+            readStream.on('data', async (chunk) => { // 1. Escuchar el evento 'data'
+                buffer += chunk;
+                let lines = buffer.split('\n');
+                buffer = lines.pop() || '';  // Mantén la última línea parcial en el buffer
 
-                        if (existingTaxi) {
-                            console.log(`Taxi ID ${id} already exists in the database.`);
-                        } else {
-                            await prisma.taxis.create({
-                                data: {
-                                    id: parseInt(id),
-                                    plate
-                                }
+                for (const line of lines) {
+                    const [id, plate] = line.split(',');
+                    if (id && plate) {
+                        try {
+                            // Verificar si el taxi ya existe en la base de datos
+                            const existingTaxi = await prisma.taxis.findUnique({
+                                where: { id: parseInt(id) },
                             });
-                            console.log(`Inserted Taxi ID ${id} into the database.`);
+
+                            if (existingTaxi) {
+                                console.log(`Taxi ID ${id} already exists in the database.`);
+                            } else {
+                                await prisma.taxis.create({
+                                    data: {
+                                        id: parseInt(id),
+                                        plate
+                                    }
+                                });
+                                console.log(`Inserted Taxi ID ${id} into the database.`);
+                            }
+                        } catch (error) {
+                            console.error(`Error processing data for taxi ID ${id}:`, error);
                         }
-                    } catch (error) {
-                        console.error(`Error processing data for taxi ID ${id}:`, error);
                     }
                 }
+            });
+        } else {
+            await prisma.$connect();
+            const trajectoriesDirPath = path.join(directoryPath, 'trajectories');
+            if (type === 'trajectories') {
+                if (!fs.existsSync(trajectoriesDirPath)) {
+                    console.error(`Taxis file does not exist: ${trajectoriesDirPath}`);
+                    process.exit(1);
+                }
             }
-        });
+            const files = fs.readdirSync(trajectoriesDirPath);
+            let filesProcessed = 0; // contador para procesar
+            for (const fileData of files) {
+                const filePath = path.join(trajectoriesDirPath, fileData);
+                const readStream = fs.createReadStream(filePath, { encoding: 'utf8' });
+                let buffer = '';
 
+                await new Promise((resolve, reject) => {
+
+                    readStream.on('data', async (chunk) => {
+                        buffer += chunk;
+                        let lines = buffer.split('\n');
+                        buffer = lines.pop() || '';
+                        for (const line of lines) {
+                            const [taxi_id, date, latitude, longitude] = line.split(',');
+
+                            if (taxi_id && date && latitude && longitude) {
+
+                                try {
+                                    // Aquí puedes insertar los datos en la base de datos
+                                    await prisma.trajectories.create({
+                                        data: {
+                                            taxi_id: parseInt(taxi_id),
+                                            date: new Date(date),
+                                            latitude: parseFloat(latitude),
+                                            longitude: parseFloat(longitude),
+
+                                        }
+                                    });
+
+
+                                } catch (error) {
+                                    console.error(`Error processing data for trajectory ID `, error);
+                                }
+                            }
+                        }
+                    });
+
+                    readStream.on('end', resolve);
+                    readStream.on('error', reject);
+                });
+                filesProcessed += 1;
+                console.log(`Processed ${filesProcessed} of ${files.length} files.`);
+            }
+        }
     } catch (error) {
-        console.error('Error reading taxis file:', error);
-    } finally {
+        console.error('Error reading taxis file:', error)
+    }
+    finally {
         await prisma.$disconnect();
     }
 
     //2. escuchar el event 'end'
-    
-    try {
-        await prisma.$connect(); 
-        const trajectoriesDirPath = path.join(directoryPath, 'trajectories');
-        if (type === 'trajectories') {
-            if (!fs.existsSync(trajectoriesDirPath)) {
-                console.error(`Taxis file does not exist: ${trajectoriesDirPath}`);
-                process.exit(1);
-            }
-        }
-        const files = fs.readdirSync(trajectoriesDirPath);
 
-        files.forEach(async (fileData) => {
-            const filePath = path.join(trajectoriesDirPath, fileData);
-            const readStream = fs.createReadStream(filePath, { encoding: 'utf8' });
-            let buffer = '';
+    // try {
 
-            readStream.on('data', async (chunk) => {
-                buffer += chunk;
-                let lines = buffer.split('\n');
-                buffer = lines.pop() || '';
-
-                for (const line of lines) {
-                    const [taxi_id, date, latitude, longitude, id] = line.split(',');
-                    if (taxi_id && date && latitude && longitude && id) {
-                        try {
-                            // Aquí puedes insertar los datos en la base de datos
-                            await prisma.trajectories.create({
-                                data: {
-                                    taxi_id: parseInt(taxi_id),
-                                    date: new Date(date),
-                                    latitude: parseFloat(latitude),
-                                    longitude: parseFloat(longitude),
-                                    id: parseInt(id)
-                                }
-                            });
-                        } catch (error) {
-                            console.error(`Error processing data for trajectory ID ${id}:`, error);
-                        }
-                    }
-                }
-            });
-
-            readStream.on('end', () => {
-                console.log(`Trajectories data from ${fileData} processed.`);
-            });
-
-            readStream.on('error', (error) => {
-                console.error('Error reading trajectory file:', error);
-            });
-        });
-    } catch (error) {
-        console.error('Error reading trajectories directory:', error);
-    }
+    // } catch (error) {
+    //     console.error('Error reading trajectories directory:', error);
+    // }
 }
-    main()
-        ;
+main()
+    ;
 
 
 
