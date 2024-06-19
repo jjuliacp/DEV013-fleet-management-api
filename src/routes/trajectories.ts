@@ -1,5 +1,5 @@
 import express from 'express'
-import { lastLocation, locationLog } from '../controller/trajectories'
+import { exportToExcel, lastLocation, locationLog } from '../controller/trajectories'
 
 
 const router = express.Router()
@@ -128,5 +128,5 @@ const router = express.Router()
 
 router.get('/trajectories/:id', locationLog) // seria la funcion del controller
 router.get('/lastlocation', lastLocation); // ultima ubicación
-
+router.get('/trajectories/:id/export', exportToExcel ) // exportar trayectorias segun id y fecha 
 export default router
