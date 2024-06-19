@@ -148,10 +148,10 @@ async function main() {
             }
             const files = fs.readdirSync(trajectoriesDirPath);
             let filesProcessed = 0; // contador para procesar
-            for (const fileData of files) {
+            for (const fileData of files) { //itera sobre cada archivo files
                 const filePath = path.join(trajectoriesDirPath, fileData);
                 const readStream = fs.createReadStream(filePath, { encoding: 'utf8' });
-                let buffer = '';
+                let buffer = ''; // almacenar temporalmente los datos leidos del archivo
 
                 await new Promise((resolve, reject) => {
 
@@ -165,7 +165,7 @@ async function main() {
                             if (taxi_id && date && latitude && longitude) {
 
                                 try {
-                                    // Aquí puedes insertar los datos en la base de datos
+                                    // insertar los datos en la base de datos
                                     await prisma.trajectories.create({
                                         data: {
                                             taxi_id: parseInt(taxi_id),
