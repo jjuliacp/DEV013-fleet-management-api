@@ -1,5 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
+// const prisma = new PrismaClient({
+//   log: ['query', 'info', 'warn', 'error'],
+// })
 
 //función que maneje las ubicaciones de los taxis segun id y date
 export const getTaxiLocations = async (id: string, searchDate: Date, startIndex: number, limit: number) => {
@@ -27,25 +30,23 @@ export const getTaxiLocations = async (id: string, searchDate: Date, startIndex:
   }
 }
 
-export const getLastLocations = async (skip: number, take: number) => {
+export const getLastLocations = async (startIndex: number, limit: number) => {
   try {
-    return await prisma.trajectories.findMany({
-      // ordena todos los registros de trayectorias en base a la fecha, del más reciente al más antiguo.
-      orderBy: {
-        date: 'desc',
-      },
-      select: {
-        latitude: true,
-        longitude: true,
-        taxi_id: true,
-        date: true,
-      },
-      distinct: ["taxi_id"], //solo se devuelva un resultado único para cada taxi_id, eliminando duplicados
-      skip, //para indicar cuántos registros saltar en la consulta
-      take, //para especificar cuántos registros tomar después de los saltados.
-    })
+    const result = await prisma.$queryRaw`
+    SELECT DISTINCT ON (taxi_id) 
+      latitude, 
+      longitude, 
+      taxi_id, 
+      date 
+    FROM trajectories 
+    ORDER BY taxi_id, date DESC 
+    OFFSET ${startIndex} 
+    LIMIT ${limit};
+  `;
+    return result;
   } catch (error) {
-    return error
+    console.error('Error al obtener la última ubicación de los taxis:', error);
+    throw error; // Lanza el error para manejarlo en el controlador
   }
 }
 
@@ -71,7 +72,7 @@ export const getDataExport = async (id: string, searchDate: Date) => {
     });
 
 
-    
+
   } catch (error) {
     return error
   }
